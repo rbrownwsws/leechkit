@@ -1,7 +1,7 @@
 import math
 from typing import Sequence, Final, Optional
 
-from scipy.stats import poisson_binom
+import numpy as np
 
 from anki.cards import Card
 from anki.stats_pb2 import CardStatsResponse
@@ -17,6 +17,37 @@ _THRESHOLD_FACTOR: Final[float] = (math.pi**2) / 6
 Magic number used in calculating the corrected leech threshold
 """
 
+def _fast_poisson_binomial_pmf(p: list):
+    """
+    Calculate the exact PMF of the Poisson Binomial distribution using
+    dynamic programming and vectorized NumPy operations.
+
+    Parameters:
+    -----------
+    p : array-like
+        Array of success probabilities for each Bernoulli trial
+
+    Returns:
+    --------
+    numpy array of PMF values for k=0,1,...,len(p)
+    """
+    p = np.asarray(p, dtype=np.float64)
+    n = len(p)
+
+    if not np.all((0 <= p) & (p <= 1)):
+        raise ValueError("All probabilities must be between 0 and 1")
+    if n == 0:
+        return np.array([1.0])
+
+    pmf = np.zeros(n + 1, dtype=np.float64)
+    pmf[0] = 1.0  # Base case: probability of 0 successes with 0 trials is 1
+
+    for prob in p:
+        pmf_shifted = np.zeros_like(pmf)
+        pmf_shifted[1:] = pmf[:-1] * prob  # Probability of success for this trial
+        pmf = pmf * (1 - prob) + pmf_shifted  # No success + success for this trial
+
+    return pmf
 
 def _calculate_corrected_threshold(alpha: float, n: int) -> float:
     """
@@ -74,7 +105,8 @@ def card_is_leech(
         if canonical_curr_review.button_chosen != 1:
             trial_success_count += 1
 
-    p = poisson_binom.pmf(trial_success_count, trial_probabilities)
+    pmg = _fast_poisson_binomial_pmf(trial_probabilities)
+    p = sum(pmf[0:trial_success_count + 1])
 
     if dynamic_threshold:
         actual_threshold = _calculate_corrected_threshold(
