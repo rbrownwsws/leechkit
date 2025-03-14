@@ -21,7 +21,7 @@ def main(
     skip_reviews: int = 3,
     leech_threshold: float = 0.05,
     dynamic_threshold: bool = False,
-    flag: bool = True,
+    flag: bool = False,
     write: bool = False,
 ):
     options_table = Table()
