@@ -105,7 +105,7 @@ def card_is_leech(
         if canonical_curr_review.button_chosen != 1:
             trial_success_count += 1
 
-    pmg = _fast_poisson_binomial_pmf(trial_probabilities)
+    pmf = _fast_poisson_binomial_pmf(trial_probabilities)
     p = sum(pmf[0:trial_success_count + 1])
 
     if dynamic_threshold:
