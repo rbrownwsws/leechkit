@@ -1,11 +1,11 @@
 import math
 from typing import Sequence, Final, Optional
 
-from scipy.stats import poisson_binom
 
 from anki.cards import Card
 from anki.stats_pb2 import CardStatsResponse
 
+from .pbd import fast_poisson_binomial_pmf
 from .utils import (
     group_card_reviews_by_day,
     SECONDS_PER_DAY,
@@ -74,7 +74,8 @@ def card_is_leech(
         if canonical_curr_review.button_chosen != 1:
             trial_success_count += 1
 
-    p = poisson_binom.pmf(trial_success_count, trial_probabilities)
+    pmf = fast_poisson_binomial_pmf(trial_probabilities)
+    p = sum(pmf[0 : trial_success_count + 1])
 
     if dynamic_threshold:
         actual_threshold = _calculate_corrected_threshold(

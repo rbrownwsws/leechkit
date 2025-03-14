@@ -9,5 +9,8 @@ wheels/
 # Virtual environments
 .venv
 
+# Hypothesis cache
+.hypothesis
+
 # IDE Junk
 .idea
