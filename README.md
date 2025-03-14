@@ -26,9 +26,9 @@ uv run -m leechkit <ANKI_HOME>/<PROFILE>/collection.anki2 --query "deck:foo" --f
 ### Optional arguments:
 
 - `--query` - The Anki search query used to select cards to check. Default `deck:current`
-- `--tag` - The tag to apply to notes that have leech cards. Default `maybe-leech`
 - `--skip_reviews` - The number of days with reviews to ignore to let the FSRS state stabilise
-- `--leech_threshold`
-- `--dynamic_threshold` - Use `@Expertium`'s dynamic threshold correction
+- `--leech-threshold`
+- `--dynamic-threshold` - Use `@Expertium`'s dynamic threshold correction
+- `--tag` - The tag to apply to notes that have leech cards. Default `maybe-leech`
 - `--flag` - Will also flag the specific leech card red
 - `--write` - Will write the leech tag and flag to notes that have detected leech cards
