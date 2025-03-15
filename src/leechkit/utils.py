@@ -3,6 +3,7 @@ import sys
 from datetime import timezone, date, datetime, tzinfo
 from typing import Final, Optional, Sequence
 
+from anki.stats import REVLOG_CRAM
 from anki.stats_pb2 import CardStatsResponse
 
 SECONDS_PER_DAY: Final[int] = 86_400
@@ -94,6 +95,15 @@ def group_card_reviews_by_day(
 
     grouped_reviews = []
     current_day_reviews: Optional[DayRevLog] = None
+
+    # filter manual revlog entries and reviews done in filtered decks
+    reviews = list(
+        filter(
+            lambda x: x.button_chosen >= 1
+            and (x.review_kind != REVLOG_CRAM or x.ease != 0),
+            reviews,
+        )
+    )
 
     for review in reviews:
         review_effective_date = calculate_review_effective_date(
