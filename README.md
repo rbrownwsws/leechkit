@@ -33,6 +33,7 @@ uv run -m leechkit <ANKI_HOME>/<PROFILE>/collection.anki2 --query "deck:foo" --f
 - `--skip-reviews` - Specify the number of days with reviews to ignore to let the FSRS state stabilise
 - `--leech-threshold`
 - `--dynamic-threshold` - Use `@Expertium`'s dynamic threshold correction
+- `--incremental-check` - Check if card is a leech after every review. Mark as leech if card ever drops below threshold.
 - `--write` - Add the leech tag to notes with detected leech cards
 - `--tag` - Specify the tag applied to notes having leech cards. Default `maybe-leech`
 - `--flag` - Flag the detected leech card red. Use with `--write`
