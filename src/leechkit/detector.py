@@ -65,7 +65,7 @@ def card_is_leech(
         elapsed_days = (
             canonical_curr_review.time - canonical_prev_review.time
         ) / SECONDS_PER_DAY
-        stability = canonical_curr_review.memory_state.stability
+        stability = canonical_prev_review.memory_state.stability
 
         r = calculate_fsrs_4_5_retrievability(elapsed_days, stability)
 
