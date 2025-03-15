@@ -90,28 +90,25 @@ def calculate_review_effective_date(
     ).date()
 
 
-def find_latest_reset_index(reviews: Sequence[CardStatsResponse.StatsRevlogEntry]) -> int:
-    """
-    Find the index of the latest reset entry in the reviews sequence.
-    A reset entry is identified by button_chosen == 0 and ease == 0.
-    
-    :param reviews: A sequence of review entries, sorted from oldest to newest
-    :return: The index of the latest reset entry, or -1 if no reset entry is found
-    """
-    latest_reset_index = -1
-    
-    for i, entry in enumerate(reviews):
-        if entry.button_chosen == 0 and entry.ease == 0:
-            latest_reset_index = i
-    
-    return latest_reset_index
-
-
 def filter_out_reviews_unwanted_by_fsrs(
     reviews: Sequence[CardStatsResponse.StatsRevlogEntry],
 ) -> list[CardStatsResponse.StatsRevlogEntry]:
-    # Purge reviews before a card reset
-    latest_reset_index = find_latest_reset_index(reviews)
+    """
+    Filter out manual and rescheduled entries, reviews in filtered decks and reviews before the latest card reset.
+    
+    Note: This function operates on reviews for a single card. The parameter 'reviews' should contain
+    only review log entries for one specific card.
+    
+    A reset entry is identified by button_chosen == 0 and ease == 0.
+    
+    :param reviews: Review log entries for a single card, sorted from oldest to newest.
+    :return: Filtered review log entries after removing unwanted reviews.
+    """
+    # Find the latest reset entry for this card
+    latest_reset_index = -1
+    for i, entry in enumerate(reviews):
+        if entry.button_chosen == 0 and entry.ease == 0:
+            latest_reset_index = i
     
     # If a reset is found, only keep reviews after the reset
     if latest_reset_index >= 0:
@@ -119,8 +116,7 @@ def filter_out_reviews_unwanted_by_fsrs(
     else:
         filtered_reviews = list(reviews)
     
-
-# Stolen from rslib `reviews_for_fsrs`
+    # Stolen from rslib `reviews_for_fsrs`
     return [
         entry
         for entry in filtered_reviews
