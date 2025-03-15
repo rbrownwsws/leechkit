@@ -79,11 +79,7 @@ def _calculate_trials_data(
         elapsed_days = (
             canonical_curr_review.time - canonical_prev_review.time
         ) / SECONDS_PER_DAY
-
-        # TODO: Is this the correct stability?
-        #       Is it memory state at the time of review or the new state after the review?
-        #       i.e. Should I be using stability from the previous review here?
-        stability = canonical_curr_review.memory_state.stability
+        stability = canonical_prev_review.memory_state.stability
 
         r = calculate_fsrs_4_5_retrievability(elapsed_days, stability)
 
