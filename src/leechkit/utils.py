@@ -90,15 +90,40 @@ def calculate_review_effective_date(
     ).date()
 
 
-# Stolen from rslib `reviews_for_fsrs`
+def find_latest_reset_index(reviews: Sequence[CardStatsResponse.StatsRevlogEntry]) -> int:
+    """
+    Find the index of the latest reset entry in the reviews sequence.
+    A reset entry is identified by button_chosen == 0 and ease == 0.
+    
+    :param reviews: A sequence of review entries, sorted from oldest to newest
+    :return: The index of the latest reset entry, or -1 if no reset entry is found
+    """
+    latest_reset_index = -1
+    
+    for i, entry in enumerate(reviews):
+        if entry.button_chosen == 0 and entry.ease == 0:
+            latest_reset_index = i
+    
+    return latest_reset_index
+
+
 def filter_out_reviews_unwanted_by_fsrs(
     reviews: Sequence[CardStatsResponse.StatsRevlogEntry],
 ) -> list[CardStatsResponse.StatsRevlogEntry]:
-    # TODO: Purge reviews before a card reset
+    # Purge reviews before a card reset
+    latest_reset_index = find_latest_reset_index(reviews)
+    
+    # If a reset is found, only keep reviews after the reset
+    if latest_reset_index >= 0:
+        filtered_reviews = reviews[latest_reset_index + 1:]
+    else:
+        filtered_reviews = list(reviews)
+    
 
+# Stolen from rslib `reviews_for_fsrs`
     return [
         entry
-        for entry in reviews
+        for entry in filtered_reviews
         if not (
             # set due date, reset or rescheduled
             (entry.review_kind == RevlogReviewKind.MANUAL or entry.button_chosen == 0)
