@@ -80,9 +80,10 @@ def main(
                     if flag:
                         card.flags |= LEECH_FLAG
                         col.update_card(card)
-
+                # Not using col.card_stats_data().total_secs in case the revlogs are truncated
+                time_spent = sum(revlog.taken_secs for revlog in revlogs)
                 progress.console.print(
-                    f"[green]Found leech - cid:{card_id} - metadata:{metadata}[/green]",
+                    f"[green]Found leech - cid:{card_id} - metadata:{metadata} - review-count:{len(revlogs)} - time-spent:{time_spent:.0f}s[/green]",
                     highlight=False,
                 )
 
