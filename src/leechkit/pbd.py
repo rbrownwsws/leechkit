@@ -1,7 +1,8 @@
 import numpy as np
+import numpy.typing as npt
 
 
-def fast_poisson_binomial_pmf(p: list):
+def fast_poisson_binomial_pmf(p: npt.ArrayLike):
     """
     Calculate the exact PMF of the Poisson Binomial distribution using
     dynamic programming and vectorized NumPy operations.

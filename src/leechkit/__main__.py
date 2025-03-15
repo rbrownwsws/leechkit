@@ -21,6 +21,7 @@ def main(
     skip_reviews: int = 3,
     leech_threshold: float = 0.05,
     dynamic_threshold: bool = False,
+    incremental_check: bool = False,
     flag: bool = False,
     write: bool = False,
 ):
@@ -32,6 +33,7 @@ def main(
     options_table.add_row("skip_reviews", f"{skip_reviews}")
     options_table.add_row("leech_threshold", f"{leech_threshold}")
     options_table.add_row("dynamic_threshold", f"{dynamic_threshold}")
+    options_table.add_row("incremental_check", f"{incremental_check}")
     options_table.add_row("tag", f"{tag}")
     options_table.add_row("flag", f"{flag}")
     options_table.add_row("write", f"{write}")
@@ -66,6 +68,7 @@ def main(
                 skip_reviews=skip_reviews,
                 leech_threshold=leech_threshold,
                 dynamic_threshold=dynamic_threshold,
+                incremental_check=incremental_check,
                 next_day_starts_at_hour=next_day_starts_at_hour,
             )
 

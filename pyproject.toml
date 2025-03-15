@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "anki==25.2",
+    "matplotlib>=3.10.1",
     "numpy>=2.2.3",
     "rich>=13.9.4",
     "scipy>=1.15.2",
