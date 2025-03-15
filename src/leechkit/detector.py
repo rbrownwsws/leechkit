@@ -14,6 +14,7 @@ from .utils import (
     SECONDS_PER_DAY,
     calculate_fsrs_4_5_retrievability,
     DayRevLog,
+    filter_out_reviews_unwanted_by_fsrs,
 )
 
 _THRESHOLD_FACTOR: Final[float] = (math.pi**2) / 6
@@ -188,7 +189,10 @@ def card_is_leech(
     if leech_threshold < 0 or leech_threshold > 1:
         raise Exception("leech_threshold must be between 0 and 1")
 
-    grouped_reviews = group_card_reviews_by_day(reviews, next_day_starts_at_hour)
+    filtered_reviews = filter_out_reviews_unwanted_by_fsrs(reviews)
+    grouped_reviews = group_card_reviews_by_day(
+        filtered_reviews, next_day_starts_at_hour
+    )
 
     trials_data = _calculate_trials_data(
         grouped_reviews=grouped_reviews, skip_reviews=skip_reviews

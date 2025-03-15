@@ -1,6 +1,7 @@
 import os
 import sys
 from datetime import timezone, date, datetime, tzinfo
+from enum import IntEnum
 from typing import Final, Optional, Sequence
 
 from anki.stats_pb2 import CardStatsResponse
@@ -10,6 +11,16 @@ SECONDS_PER_HOUR: Final[int] = 3_600
 
 _FSRS_DECAY: Final[float] = -0.5
 _FSRS_FACTOR: Final[float] = 19 / 81
+
+
+# Redefine these values locally because Anki Pylib uses outdated names
+class RevlogReviewKind(IntEnum):
+    LEARNING = 0
+    REVIEW = 1
+    RELEARNING = 2
+    FILTERED = 3
+    MANUAL = 4
+    RESCHEDULED = 5
 
 
 class SuppressPrint:
@@ -77,6 +88,26 @@ def calculate_review_effective_date(
         timestamp=offset_timestamp_s,
         tz=tz,
     ).date()
+
+
+# Stolen from rslib `reviews_for_fsrs`
+def filter_out_reviews_unwanted_by_fsrs(
+    reviews: Sequence[CardStatsResponse.StatsRevlogEntry],
+) -> list[CardStatsResponse.StatsRevlogEntry]:
+    # TODO: Purge reviews before a card reset
+
+    return [
+        entry
+        for entry in reviews
+        if not (
+            # set due date, reset or rescheduled
+            (entry.review_kind == RevlogReviewKind.MANUAL or entry.button_chosen == 0)
+            # cram
+            or (entry.review_kind == RevlogReviewKind.FILTERED and entry.ease == 0)
+            # rescheduled
+            or (entry.review_kind == RevlogReviewKind.RESCHEDULED)
+        )
+    ]
 
 
 def group_card_reviews_by_day(
