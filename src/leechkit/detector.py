@@ -144,34 +144,56 @@ def _classify_with_total_history(
     trials_data: TrialsData,
     initial_threshold: float,
     threshold_fn: ThresholdFn,
-) -> (bool, Optional[float], Optional[float]):
+) -> (bool, dict):
     pmf = fast_poisson_binomial_pmf(trials_data.probabilities)
     p = pmf[0 : trials_data.successes.sum() + 1].sum()
 
     actual_threshold = threshold_fn(initial_threshold, trials_data.n_trials)
 
-    return p < actual_threshold, p, actual_threshold
+    metadata = {
+        "p": float(p),
+        "t": actual_threshold,
+    }
+
+    return p < actual_threshold, metadata
 
 
 def _classify_incrementally(
     trials_data: TrialsData,
     initial_threshold: float,
     threshold_fn: ThresholdFn,
-) -> (bool, Optional[float], Optional[float]):
+) -> (bool, dict):
     leech_data = _calculate_incremental_leech_probabilities(
         trials_data=trials_data,
         initial_threshold=initial_threshold,
         threshold_fn=threshold_fn,
     )
 
+    triggered_at_least_once = False
+    last_triggered = False
+    curr_triggered = False
+    crossover_count = 0
+
+    metadata = {}
+
     # Mark as leech as soon as we see it drop below the threshold
     for i in range(leech_data.n_trials):
         p = leech_data.probabilities[i]
         t = leech_data.thresholds[i]
         if p < t:
-            return True, p, t
+            triggered_at_least_once = True
+            curr_triggered = True
+        else:
+            curr_triggered = False
 
-    return False, None, None
+        if curr_triggered != last_triggered:
+            crossover_count += 1
+
+        last_triggered = curr_triggered
+
+    metadata["crossover_count"] = crossover_count
+
+    return triggered_at_least_once, metadata
 
 
 def card_is_leech(
@@ -200,7 +222,7 @@ def card_is_leech(
 
     # If we skipped everything just return leech=False
     if trials_data is None:
-        return False, None, None
+        return False, {}
 
     threshold_fn: ThresholdFn
     if dynamic_threshold:

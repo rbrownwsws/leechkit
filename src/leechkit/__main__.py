@@ -62,7 +62,7 @@ def main(
             # Reverse the revlog so we are going from oldest->newest
             revlogs.reverse()
 
-            is_leech, p, thresh = card_is_leech(
+            is_leech, metadata = card_is_leech(
                 card=card,
                 reviews=revlogs,
                 skip_reviews=skip_reviews,
@@ -82,7 +82,7 @@ def main(
                         col.update_card(card)
 
                 progress.console.print(
-                    f"[green]Found leech - cid:{card_id} - p:{p} - thresh:{thresh}[/green]",
+                    f"[green]Found leech - cid:{card_id} - metadata:{metadata}[/green]",
                     highlight=False,
                 )
 
