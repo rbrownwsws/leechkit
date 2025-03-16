@@ -10,7 +10,7 @@ from rich.progress import Progress
 from rich.table import Table
 
 from .detector import card_is_leech
-from .utils import SuppressPrint, RevlogReviewKind
+from .utils import SuppressPrint, filter_out_reviews_unwanted_by_fsrs
 
 LEECH_FLAG: Final[int] = 1
 
@@ -83,11 +83,7 @@ def main(
                         col.update_card(card)
                 # Not using col.card_stats_data().total_secs in case the revlogs are truncated
                 time_spent = sum(revlog.taken_secs for revlog in revlogs)
-                reviews = [
-                    revlog
-                    for revlog in revlogs
-                    if revlog.review_kind == RevlogReviewKind.LEARNING
-                ]
+                reviews = filter_out_reviews_unwanted_by_fsrs(revlogs)
                 lapses = sum(1 for revlog in reviews if revlog.button_chosen == 1)
                 metadata["p"] = f"{metadata['p']:.2%}"
                 metadata["rmsi"] = f"{metadata['rmsi']:.2f}"
