@@ -242,7 +242,8 @@ def card_is_leech(
         threshold_fn=threshold_fn,
     )
 
-    metadata["root_mean_squared_interval"] = (
+    # Root Mean Squared Interval
+    metadata["rmsi"] = (
         mean(
             (day.reviews[-1].interval / (60 * 60 * 24)) ** 2 for day in grouped_reviews
         )
