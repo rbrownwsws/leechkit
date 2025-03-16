@@ -247,7 +247,5 @@ def card_is_leech(
             (day.reviews[-1].interval / (60 * 60 * 24)) ** 2 for day in grouped_reviews
         )
         ** 0.5
-        if reviews
-        else -1
     )
     return data, metadata
