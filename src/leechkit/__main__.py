@@ -82,7 +82,8 @@ def main(
                         col.update_card(card)
                 # Not using col.card_stats_data().total_secs in case the revlogs are truncated
                 time_spent = sum(revlog.taken_secs for revlog in revlogs)
-                lapses = sum(1 for revlog in revlogs if revlog.button_chosen == 1)
+                reviews = [revlog for revlog in revlogs if revlog.review_kind == RevlogReviewKind.LEARNING]
+                lapses = sum(1 for revlog in reviews if revlog.button_chosen == 1)
                 progress.console.print(
                     f"[green]Found leech - cid:{card_id} - metadata:{metadata} - review-count:{len(revlogs)} - lapses:{lapses} - time-spent:{time_spent:.0f}s[/green]",
                     highlight=False,
