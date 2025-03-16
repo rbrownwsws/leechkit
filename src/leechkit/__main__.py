@@ -89,6 +89,8 @@ def main(
                     if revlog.review_kind == RevlogReviewKind.LEARNING
                 ]
                 lapses = sum(1 for revlog in reviews if revlog.button_chosen == 1)
+                metadata["p"] = f"{metadata['p']:.2%}"
+                metadata["rmsi"] = f"{metadata['rmsi']:.2f}"
                 progress.console.print(
                     f"[green]Found leech - cid:{card_id} - metadata:{metadata} - review-count:{len(revlogs)} - lapses:{lapses} - time-spent:{time_spent:.0f}s [/green]",
                     highlight=False,
