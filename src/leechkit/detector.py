@@ -237,10 +237,17 @@ def card_is_leech(
         classify_function = _classify_with_total_history
 
     data, metadata = classify_function(
-            trials_data=trials_data,
-            initial_threshold=leech_threshold,
-            threshold_fn=threshold_fn,
-        )
+        trials_data=trials_data,
+        initial_threshold=leech_threshold,
+        threshold_fn=threshold_fn,
+    )
 
-    metadata["root_mean_squared_interval"] = mean((day.reviews[-1].interval / (60 * 60 * 24)) ** 2 for day in grouped_reviews) ** 0.5 if reviews else -1
+    metadata["root_mean_squared_interval"] = (
+        mean(
+            (day.reviews[-1].interval / (60 * 60 * 24)) ** 2 for day in grouped_reviews
+        )
+        ** 0.5
+        if reviews
+        else -1
+    )
     return data, metadata
