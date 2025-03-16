@@ -1,4 +1,5 @@
 from pathlib import Path
+from statistics import mean
 from typing import Sequence, Final
 import typer
 
@@ -9,7 +10,7 @@ from rich.progress import Progress
 from rich.table import Table
 
 from .detector import card_is_leech
-from .utils import SuppressPrint
+from .utils import SuppressPrint, RevlogReviewKind
 
 LEECH_FLAG: Final[int] = 1
 
@@ -85,7 +86,7 @@ def main(
                 reviews = [revlog for revlog in revlogs if revlog.review_kind == RevlogReviewKind.LEARNING]
                 lapses = sum(1 for revlog in reviews if revlog.button_chosen == 1)
                 progress.console.print(
-                    f"[green]Found leech - cid:{card_id} - metadata:{metadata} - review-count:{len(revlogs)} - lapses:{lapses} - time-spent:{time_spent:.0f}s[/green]",
+                    f"[green]Found leech - cid:{card_id} - metadata:{metadata} - review-count:{len(revlogs)} - lapses:{lapses} - time-spent:{time_spent:.0f}s [/green]",
                     highlight=False,
                 )
 
