@@ -62,15 +62,15 @@ def _calculate_trials_data(
     :return:
     """
 
-    starting_idx = max(skip_reviews, len(grouped_reviews) - max_reviews)
-    n_trials = len(grouped_reviews) - starting_idx
+    starting_idx = skip_reviews
+    if max_reviews > 0:
+        starting_idx = max(skip_reviews, len(grouped_reviews) - max_reviews)
 
     if n_trials <= 0:
         return None
 
     trial_probabilities = np.zeros(n_trials, dtype=np.float64)
     trial_successes = np.zeros(n_trials, dtype=np.bool)
-    #print([grouped_reviews[i].reviews[0] for i in range(starting_idx, len(grouped_reviews))])
     for day_idx in range(starting_idx, len(grouped_reviews)):
         prev_review_day = grouped_reviews[day_idx - 1]
         curr_review_day = grouped_reviews[day_idx]
