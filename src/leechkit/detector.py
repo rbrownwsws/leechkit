@@ -219,7 +219,9 @@ def card_is_leech(
     )
 
     trials_data = _calculate_trials_data(
-        grouped_reviews=grouped_reviews, skip_reviews=skip_reviews, max_reviews=max_reviews
+        grouped_reviews=grouped_reviews,
+        skip_reviews=skip_reviews,
+        max_reviews=max_reviews,
     )
 
     # If we skipped everything just return leech=False
