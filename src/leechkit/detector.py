@@ -51,7 +51,7 @@ class TrialsData:
 
 
 def _calculate_trials_data(
-    grouped_reviews: list[DayRevLog], skip_reviews: int
+    grouped_reviews: list[DayRevLog], skip_reviews: int, max_reviews: int
 ) -> Optional[TrialsData]:
     """
     Convert a list of reviews grouped by day into a list of Bernoulli trial
@@ -62,15 +62,16 @@ def _calculate_trials_data(
     :return:
     """
 
-    n_trials = len(grouped_reviews) - skip_reviews
+    starting_idx = max(skip_reviews, len(grouped_reviews) - max_reviews)
+    n_trials = len(grouped_reviews) - starting_idx
 
     if n_trials <= 0:
         return None
 
     trial_probabilities = np.zeros(n_trials, dtype=np.float64)
     trial_successes = np.zeros(n_trials, dtype=np.bool)
-
-    for day_idx in range(skip_reviews, len(grouped_reviews)):
+    #print([grouped_reviews[i].reviews[0] for i in range(starting_idx, len(grouped_reviews))])
+    for day_idx in range(starting_idx, len(grouped_reviews)):
         prev_review_day = grouped_reviews[day_idx - 1]
         curr_review_day = grouped_reviews[day_idx]
 
@@ -84,7 +85,7 @@ def _calculate_trials_data(
 
         r = calculate_fsrs_4_5_retrievability(elapsed_days, stability)
 
-        trial_idx = day_idx - skip_reviews
+        trial_idx = day_idx - starting_idx
         trial_probabilities[trial_idx] = r
         trial_successes[trial_idx] = canonical_curr_review.button_chosen != 1
 
@@ -200,6 +201,7 @@ def card_is_leech(
     card: Card,
     reviews: Sequence[CardStatsResponse.StatsRevlogEntry],
     skip_reviews: int,
+    max_reviews: int,
     leech_threshold: float,
     dynamic_threshold: bool,
     incremental_check: bool,
@@ -217,7 +219,7 @@ def card_is_leech(
     )
 
     trials_data = _calculate_trials_data(
-        grouped_reviews=grouped_reviews, skip_reviews=skip_reviews
+        grouped_reviews=grouped_reviews, skip_reviews=skip_reviews, max_reviews=max_reviews
     )
 
     # If we skipped everything just return leech=False

@@ -18,7 +18,8 @@ def main(
     collection: Path,
     query: str = "deck:current",
     tag: str = "maybe-leech",
-    skip_reviews: int = 3,
+    skip_reviews: int = 1,
+    max_reviews: int = 10,
     leech_threshold: float = 0.05,
     dynamic_threshold: bool = False,
     incremental_check: bool = False,
@@ -31,6 +32,7 @@ def main(
 
     options_table.add_row("query", f"{query}")
     options_table.add_row("skip_reviews", f"{skip_reviews}")
+    options_table.add_row("max_reviews", f"{max_reviews}")
     options_table.add_row("leech_threshold", f"{leech_threshold}")
     options_table.add_row("dynamic_threshold", f"{dynamic_threshold}")
     options_table.add_row("incremental_check", f"{incremental_check}")
@@ -66,6 +68,7 @@ def main(
                 card=card,
                 reviews=revlogs,
                 skip_reviews=skip_reviews,
+                max_reviews=max_reviews,
                 leech_threshold=leech_threshold,
                 dynamic_threshold=dynamic_threshold,
                 incremental_check=incremental_check,
