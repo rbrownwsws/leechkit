@@ -66,6 +66,7 @@ def _calculate_trials_data(
     if max_reviews > 0:
         starting_idx = max(skip_reviews, len(grouped_reviews) - max_reviews)
 
+    n_trials = len(grouped_reviews) - starting_idx
     if n_trials <= 0:
         return None
 
