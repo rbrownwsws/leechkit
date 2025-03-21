@@ -1,4 +1,5 @@
 import math
+from statistics import mean
 from typing import Sequence, Final, Optional, Callable
 from dataclasses import dataclass
 
@@ -236,14 +237,21 @@ def card_is_leech(
         threshold_fn = _static_threshold
 
     if incremental_check:
-        return _classify_incrementally(
-            trials_data=trials_data,
-            initial_threshold=leech_threshold,
-            threshold_fn=threshold_fn,
-        )
+        classify_function = _classify_incrementally
     else:
-        return _classify_with_total_history(
-            trials_data=trials_data,
-            initial_threshold=leech_threshold,
-            threshold_fn=threshold_fn,
+        classify_function = _classify_with_total_history
+
+    data, metadata = classify_function(
+        trials_data=trials_data,
+        initial_threshold=leech_threshold,
+        threshold_fn=threshold_fn,
+    )
+
+    # Root Mean Squared Interval
+    metadata["rmsi"] = (
+        mean(
+            (day.reviews[-1].interval / (60 * 60 * 24)) ** 2 for day in grouped_reviews
         )
+        ** 0.5
+    )
+    return data, metadata
