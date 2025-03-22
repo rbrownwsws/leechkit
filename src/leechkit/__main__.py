@@ -9,7 +9,7 @@ from rich.progress import Progress
 from rich.table import Table
 
 from .detector import card_is_leech
-from .utils import SuppressPrint
+from .utils import SuppressPrint, filter_out_reviews_unwanted_by_fsrs
 
 LEECH_FLAG: Final[int] = 1
 
@@ -83,9 +83,17 @@ def main(
                     if flag:
                         card.flags |= LEECH_FLAG
                         col.update_card(card)
-
+                # Not using col.card_stats_data().total_secs in case the revlogs are truncated
+                time_spent = sum(revlog.taken_secs for revlog in revlogs)
+                reviews = filter_out_reviews_unwanted_by_fsrs(revlogs)
+                lapses = sum(
+                    left.button_chosen != 1 and right.button_chosen == 1
+                    for left, right in zip(reviews[:-1], reviews[1:])
+                )
+                metadata["p"] = f"{metadata['p']:.2%}"
+                metadata["rmsi"] = f"{metadata['rmsi']:.2f}"
                 progress.console.print(
-                    f"[green]Found leech - cid:{card_id} - metadata:{metadata}[/green]",
+                    f"[green]Found leech - cid:{card_id} - metadata:{metadata} - review-count:{len(reviews)} - lapses:{lapses} - time-spent:{time_spent:.0f}s [/green]",
                     highlight=False,
                 )
 
