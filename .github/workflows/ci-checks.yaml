@@ -1,0 +1,27 @@
+name: CI Checks
+
+on: [ push, pull_request ]
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@22695119d769bdb6f7032ad67b9bca0ef8c4a174 # v5.4.0
+        with:
+          version: "0.6.9"
+          checksum: "001b87a0c2ea642a3c75a98c6af3e8528aa473d560e653cf213efcc9aaa4a028"
+
+      - name: Set up the project
+        run: uv sync --dev
+
+      - name: Check formatting
+        run: uv run ruff format --check --diff
+
+      - name: Check lint
+        run: uv run ruff check --output-format=github
+
+      - name: Run tests
+        run: uv run pytest
